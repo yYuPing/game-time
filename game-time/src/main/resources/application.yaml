@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: game-time
+  datasource:
+    url: jdbc:mysql://localhost:33061/gametime?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: 1qaz!QAZ
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 1qaz!QAZ
+      timeout: 5000
+  session:
+    store-type: redis
+    timeout: 86400 # 24小时
+
+server:
+  address: 0.0.0.0
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        name: GAMETIME_SESSION
+        http-only: true
+        same-site: lax

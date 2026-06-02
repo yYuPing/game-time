@@ -1,0 +1,19 @@
+{
+  "name": "game-time-ui",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "uni -p h5",
+    "build": "uni -p h5"
+  },
+  "dependencies": {
+    "axios": "^1.16.1",
+    "vue": "^2.6.14"
+  },
+  "devDependencies": {
+    "@dcloudio/uni-app": "2.0.2-5000720260410001",
+    "@dcloudio/webpack-uni-mp-loader": "2.0.2-5000720260410001",
+    "@vue/cli-service": "^4.5.17",
+    "cross-env": "^7.0.3"
+  }
+}
