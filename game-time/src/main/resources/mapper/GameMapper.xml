@@ -6,6 +6,7 @@
         SELECT * FROM games
     </select>
 
+
     <select id="findById" resultType="Game">
         SELECT * FROM games WHERE id = #{id}
     </select>

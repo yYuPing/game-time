@@ -6,7 +6,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -28,4 +27,4 @@ public class GlobalExceptionHandler {
     public ResponseEntity<com.yuyu.game_time.dto.ApiResponse<?>> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(com.yuyu.game_time.dto.ApiResponse.fail(ex.getMessage(), 400));
     }
-}
+}    
