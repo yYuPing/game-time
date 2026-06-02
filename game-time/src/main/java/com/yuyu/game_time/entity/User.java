@@ -1,35 +1,15 @@
 package com.yuyu.game_time.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
-})
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, length = 50)
     private String username;
-
-    @Column(nullable = false)
     private String password;
-
-    @Column(nullable = false, length = 100)
     private String email;
-
-    @Column(length = 20)
     private String phone;
-
-    @Column(length = 500)
     private String avatar;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public User() {
@@ -39,11 +19,6 @@ public class User {
         this.username = username;
         this.password = password;
         this.email = email;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {

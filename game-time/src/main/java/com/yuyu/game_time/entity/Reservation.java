@@ -1,38 +1,19 @@
 package com.yuyu.game_time.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "reservations")
 public class Reservation {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long userId;
-
     private String username;
-
     private LocalDate date;
-
     private String timeslot;
-
     private Long gameId;
-
     private String gameName;
-
-    @Column(columnDefinition = "TEXT")
     private String note;
-
     private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
 
     public Reservation() {}
 

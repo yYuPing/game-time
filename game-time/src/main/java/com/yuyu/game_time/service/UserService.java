@@ -4,7 +4,7 @@ import com.yuyu.game_time.dto.LoginRequest;
 import com.yuyu.game_time.dto.RegisterRequest;
 import com.yuyu.game_time.dto.UpdateProfileRequest;
 import com.yuyu.game_time.entity.User;
-import com.yuyu.game_time.repository.UserRepository;
+import com.yuyu.game_time.mapper.UserMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,20 +13,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(UserMapper userMapper) {
+        this.userMapper = userMapper;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @Transactional
     public User register(RegisterRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userMapper.countByUsername(request.getUsername()) > 0) {
             throw new IllegalArgumentException("用户名已存在");
         }
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (request.getEmail() != null && userMapper.countByEmail(request.getEmail()) > 0) {
             throw new IllegalArgumentException("邮箱已被占用");
         }
 
@@ -35,14 +35,16 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        return userRepository.save(user);
+        userMapper.insert(user);
+        return user;
     }
 
     @Transactional(readOnly = true)
     public User login(LoginRequest request) {
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("用户名或密码错误"));
-
+        User user = userMapper.findByUsername(request.getUsername());
+        if (user == null) {
+            throw new IllegalArgumentException("用户名或密码错误");
+        }
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("用户名或密码错误");
         }
@@ -51,14 +53,19 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User getUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
+        User user = userMapper.findById(id);
+        if (user == null) {
+            throw new IllegalArgumentException("用户不存在");
+        }
+        return user;
     }
 
     @Transactional
     public User updateProfile(Long userId, UpdateProfileRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
+        User user = userMapper.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("用户不存在");
+        }
         if (request.getEmail() != null) {
             user.setEmail(request.getEmail());
         }
@@ -68,6 +75,7 @@ public class UserService {
         if (request.getAvatar() != null) {
             user.setAvatar(request.getAvatar());
         }
-        return userRepository.save(user);
+        userMapper.update(user);
+        return user;
     }
 }

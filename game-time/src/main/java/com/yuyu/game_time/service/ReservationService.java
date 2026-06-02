@@ -3,8 +3,8 @@ package com.yuyu.game_time.service;
 import com.yuyu.game_time.dto.ReservationRequest;
 import com.yuyu.game_time.entity.Game;
 import com.yuyu.game_time.entity.Reservation;
-import com.yuyu.game_time.repository.GameRepository;
-import com.yuyu.game_time.repository.ReservationRepository;
+import com.yuyu.game_time.mapper.GameMapper;
+import com.yuyu.game_time.mapper.ReservationMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,17 +14,20 @@ import java.util.List;
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final GameRepository gameRepository;
+    private final ReservationMapper reservationMapper;
+    private final GameMapper gameMapper;
 
-    public ReservationService(ReservationRepository reservationRepository, GameRepository gameRepository) {
-        this.reservationRepository = reservationRepository;
-        this.gameRepository = gameRepository;
+    public ReservationService(ReservationMapper reservationMapper, GameMapper gameMapper) {
+        this.reservationMapper = reservationMapper;
+        this.gameMapper = gameMapper;
     }
 
     @Transactional
     public Reservation create(Long userId, String username, ReservationRequest req) {
-        Game game = gameRepository.findById(req.getGameId()).orElseThrow(() -> new IllegalArgumentException("游戏不存在"));
+        Game game = gameMapper.findById(req.getGameId());
+        if (game == null) {
+            throw new IllegalArgumentException("游戏不存在");
+        }
         Reservation r = new Reservation();
         r.setUserId(userId);
         r.setUsername(username);
@@ -33,19 +36,25 @@ public class ReservationService {
         r.setGameId(game.getId());
         r.setGameName(game.getName());
         r.setNote(req.getNote());
-        return reservationRepository.save(r);
+
+        reservationMapper.insert(r);
+        return r;
     }
 
     public List<Reservation> findByDate(LocalDate date) {
-        return reservationRepository.findByDate(date);
+        return reservationMapper.findByDate(date);
     }
 
     public List<Reservation> findBetween(LocalDate start, LocalDate end) {
-        return reservationRepository.findByDateBetween(start, end);
+        return reservationMapper.findByDateBetween(start, end);
     }
 
     public Reservation findById(Long id) {
-        return reservationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("预约未找到"));
+        Reservation r = reservationMapper.findById(id);
+        if (r == null) {
+            throw new IllegalArgumentException("预约未找到");
+        }
+        return r;
     }
 
     @Transactional
@@ -54,7 +63,7 @@ public class ReservationService {
         if (!r.getUserId().equals(requesterId)) {
             throw new SecurityException("无权限删除");
         }
-        reservationRepository.deleteById(id);
+        reservationMapper.deleteById(id);
     }
 
     @Transactional
@@ -63,7 +72,8 @@ public class ReservationService {
         if (!r.getUserId().equals(requesterId)) {
             throw new SecurityException("无权限修改");
         }
+        reservationMapper.updateNote(id, note);
         r.setNote(note);
-        return reservationRepository.save(r);
+        return r;
     }
 }

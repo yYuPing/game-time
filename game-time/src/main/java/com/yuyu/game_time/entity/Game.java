@@ -1,21 +1,10 @@
 package com.yuyu.game_time.entity;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "games")
 public class Game {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String name;
-
     private String color;
-
-    @Column(columnDefinition = "TEXT")
     private String meta;
 
     public Game() {
