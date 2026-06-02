@@ -1,38 +1,47 @@
 # Game Time — 项目结构文档
 
-> 游戏预约课表系统，前后端分离架构
+> 游戏预约课表系统，前后端分离架构（单仓库）
 
 ---
 
 ## 目录结构总览
 
 ```
-game-time-ui/                      # 前端项目 (UniApp)
-├── api/                           # API 模块
-├── pages/                         # 页面组件
-├── static/                        # 静态资源
-├── pages.json                     # 页面路由 & Tab 配置
-├── main.js                        # 入口
-├── App.vue                        # 根组件
-└── ...
-
-game-time/                         # 后端项目 (Spring Boot)
-├── src/main/java/com/yuyu/game_time/
-│   ├── config/                    # 配置类
-│   ├── controller/                # 控制器 (API 接口)
-│   ├── dto/                       # 数据传输对象
-│   ├── entity/                    # 实体类
-│   ├── exception/                 # 全局异常处理
-│   ├── repository/                # 数据访问层
-│   └── service/                   # 业务逻辑层
-├── src/main/resources/
-│   └── application.yaml           # 配置文件
-├── pom.xml                        # Maven 依赖
-└── ...
-
-docker/
-├── docker-compose.yml             # Redis
-└── ...
+HBuilderProjects/                  # 🏠 单仓库根目录 (Git: main)
+│
+├── .gitignore                    # 全局忽略规则 (合并前后端)
+│
+├── Game-Time-UI/                 # 🟦 前端项目 (UniApp + Vue 2)
+│   ├── api/                      # API 模块
+│   ├── pages/                    # 页面组件
+│   ├── static/                   # 静态资源
+│   ├── pages.json                # 页面路由 & Tab 配置
+│   ├── main.js                   # 入口
+│   ├── App.vue                   # 根组件
+│   ├── components/               # 公共组件
+│   ├── design/                   # UI 设计稿
+│   └── ...
+│
+├── game-time/                    # 🟩 后端项目 (Spring Boot 3 + Java 17)
+│   ├── src/main/java/com/yuyu/game_time/
+│   │   ├── config/               # 配置类
+│   │   ├── controller/           # 控制器 (API 接口)
+│   │   ├── dto/                  # 数据传输对象
+│   │   ├── entity/               # 实体类
+│   │   ├── exception/            # 全局异常处理
+│   │   ├── repository/           # 数据访问层
+│   │   └── service/              # 业务逻辑层
+│   ├── src/main/resources/
+│   │   └── application.yaml      # 配置文件
+│   ├── pom.xml                   # Maven 依赖
+│   └── ...
+│
+├── docker/
+│   └── docker-compose.yml        # Redis
+│
+├── .github/                      # GitHub 配置 / Actions
+├── .idea/                        # IDE 配置 (本地)
+└── PROJECT_STRUCTURE.md          # 📄 本文件
 ```
 
 ---
