@@ -9,16 +9,11 @@
 
     <!-- Logo/标题区域 -->
     <view class="brand-area">
-      <view class="brand-icon">🎮</view>
       <view class="brand-title">Game Time</view>
-      <view class="brand-desc">游戏预约课表系统</view>
     </view>
 
     <!-- 登录卡片 -->
     <view class="login-card">
-      <view class="card-title">欢迎回来</view>
-      <view class="card-subtitle">请登录你的账号</view>
-
       <!-- 账号输入 -->
       <view class="input-group">
         <view class="input-icon">👤</view>
@@ -45,7 +40,8 @@
           @blur="focusField = ''"
         />
         <view class="toggle-pwd" @click="showPassword = !showPassword">
-          <text>{{ showPassword ? '🙈' : '👁️' }}</text>
+          <image v-if="showPassword" class="pwd-icon" src="/static/eye-off.svg" mode="aspectFit" />
+          <image v-else class="pwd-icon" src="/static/eye.svg" mode="aspectFit" />
         </view>
       </view>
 
@@ -168,7 +164,11 @@ export default {
 .login-page {
   min-height: 100vh;
   background: #f5f7fa;
-  padding-bottom: 60rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60rpx 0;
 }
 
 /* ===== 顶部装饰背景 ===== */
@@ -177,7 +177,7 @@ export default {
   top: 0;
   left: 0;
   right: 0;
-  height: 500rpx;
+  bottom: 0;
   overflow: hidden;
   pointer-events: none;
   z-index: 0;
@@ -198,7 +198,7 @@ export default {
   width: 350rpx;
   height: 350rpx;
   background: linear-gradient(135deg, #34c759, #30d158);
-  top: -80rpx;
+  bottom: 100rpx;
   left: -100rpx;
   opacity: 0.08;
 }
@@ -206,8 +206,8 @@ export default {
   width: 200rpx;
   height: 200rpx;
   background: linear-gradient(135deg, #ff9500, #ffcc00);
-  top: 150rpx;
-  left: 55%;
+  bottom: -50rpx;
+  right: 50rpx;
   opacity: 0.06;
 }
 
@@ -218,7 +218,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 80rpx 0 40rpx;
+  margin-bottom: 40rpx;
 }
 .brand-icon {
   font-size: 80rpx;
@@ -254,18 +254,6 @@ export default {
   padding: 48rpx 36rpx;
   box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.06);
 }
-.card-title {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 8rpx;
-}
-.card-subtitle {
-  font-size: 26rpx;
-  color: #8e98a5;
-  margin-bottom: 40rpx;
-}
-
 /* ===== 输入框 ===== */
 .input-group {
   display: flex;
@@ -302,7 +290,10 @@ export default {
 .toggle-pwd {
   flex-shrink: 0;
   padding: 12rpx;
-  font-size: 30rpx;
+}
+.pwd-icon {
+  width: 40rpx;
+  height: 40rpx;
 }
 
 /* ===== 选项行 ===== */
