@@ -4,7 +4,6 @@ import com.yuyu.gametime.dto.ApiResponse;
 import com.yuyu.gametime.dto.UpdateProfileRequest;
 import com.yuyu.gametime.entity.User;
 import com.yuyu.gametime.service.UserService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +26,7 @@ public class UserController {
      * 获取当前登录用户个人信息
      */
     @GetMapping("/profile")
-    public ResponseEntity<?> getProfile(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
+    public ResponseEntity<?> getProfile(@RequestHeader(value = "X-User-Id", required = false) Long userId) {
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.fail("未登录", 401));
@@ -47,8 +45,8 @@ public class UserController {
      * 更新当前登录用户个人信息
      */
     @PutMapping("/profile")
-    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateProfileRequest request, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateProfileRequest request,
+                                           @RequestHeader(value = "X-User-Id", required = false) Long userId) {
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.fail("未登录", 401));

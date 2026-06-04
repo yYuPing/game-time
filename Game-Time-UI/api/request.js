@@ -10,6 +10,21 @@ const request = axios.create({
   }
 });
 
+// 请求拦截器 - 自动添加用户信息
+request.interceptors.request.use(
+  (config) => {
+    const userInfo = uni.getStorageSync("userInfo");
+    if (userInfo && userInfo.userId) {
+      config.headers["X-User-Id"] = userInfo.userId;
+      config.headers["X-Username"] = userInfo.username;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // 响应拦截器
 request.interceptors.response.use(
   (response) => {

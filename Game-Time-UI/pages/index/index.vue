@@ -33,13 +33,12 @@
       <view class="week-nav">
         <view class="nav-btn" @click="prevWeek">
           <text class="nav-arrow">‹</text>
-          <text class="nav-label">上一周</text>
         </view>
         <view class="week-title">
-          <text class="week-range">{{ weekRangeText }}</text>
+          <text class="week-main">{{ weekRangeText }}</text>
+          <text class="week-sub">{{ weekDateRange }}</text>
         </view>
         <view class="nav-btn" @click="nextWeek">
-          <text class="nav-label">下一周</text>
           <text class="nav-arrow">›</text>
         </view>
       </view>
@@ -76,7 +75,7 @@
 import ScheduleGrid from './ScheduleGrid.vue';
 import ReservationModal from './ReservationModal.vue';
 import ReservationListModal from './ReservationListModal.vue';
-import { getWeekSchedule, deleteReservation } from "@/api";
+import { getWeekSchedule, createReservation, deleteReservation } from "@/api";
 
 export default {
   components: { ScheduleGrid, ReservationModal, ReservationListModal },
@@ -96,7 +95,21 @@ export default {
       const start = new Date(this.weekStart);
       const end = new Date(start);
       end.setDate(end.getDate() + 6);
-      const fmt = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
+      const year = start.getFullYear();
+      const month = start.getMonth() + 1;
+      // 计算是本月第几周
+      const firstDay = new Date(year, start.getMonth(), 1);
+      const firstMonday = new Date(firstDay);
+      const dayOffset = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+      firstMonday.setDate(1 - dayOffset);
+      const weekNum = Math.floor((start - firstMonday) / (7 * 24 * 60 * 60 * 1000)) + 1;
+      return `${year}年${month}月 · 第${weekNum}周`;
+    },
+    weekDateRange() {
+      const start = new Date(this.weekStart);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      const fmt = (d) => `${d.getMonth() + 1}月${d.getDate()}日`;
       return `${fmt(start)} - ${fmt(end)}`;
     },
     selectedCellReservations() {
@@ -171,28 +184,31 @@ export default {
       this.listModalVisible = false;
       this.modalVisible = true;
     },
-    createReservation(data) {
-      const user = uni.getStorageSync('userInfo') || {};
-      const newRes = {
-        id: Date.now(),
-        userId: user.userId || 'u-guest',
-        username: user.username || '未知',
-        date: this.selectedCell.date,
-        timeslot: this.selectedCell.timeslot,
-        gameId: data.gameId,
-        gameName: data.gameName,
-        note: data.note,
-        createdAt: new Date().toISOString()
-      };
-      this.reservations.push(newRes);
+    async createReservation(data) {
+      try {
+        const res = await createReservation({
+          date: this.selectedCell.date,
+          timeslot: this.selectedCell.timeslot,
+          gameId: data.gameId,
+          gameName: data.gameName,
+          note: data.note
+        });
+        if (res && (res.success || res.data)) {
+          uni.showToast({ title: '预约成功', icon: 'success' });
+          this.loadWeek();
+        }
+      } catch (e) {
+        uni.showToast({ title: '预约失败', icon: 'none' });
+      }
       this.modalVisible = false;
     },
     async deleteReservation(id) {
-      this.reservations = this.reservations.filter(r => r.id !== id);
       try {
         await deleteReservation(id);
+        uni.showToast({ title: '取消成功', icon: 'success' });
+        this.loadWeek();
       } catch (e) {
-        // 忽略删除失败
+        uni.showToast({ title: '取消失败', icon: 'none' });
       }
     },
     goLogin() {
@@ -300,14 +316,16 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8rpx;
+  margin-top: 12rpx;
+  padding: 0 8rpx;
 }
 .nav-btn {
   display: flex;
   align-items: center;
-  gap: 6rpx;
-  padding: 10rpx 20rpx;
-  border-radius: 20rpx;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
   background: #f5f7fa;
   transition: background 0.15s;
 }
@@ -315,23 +333,26 @@ export default {
   background: #e8ecf2;
 }
 .nav-arrow {
-  font-size: 32rpx;
+  font-size: 36rpx;
   font-weight: 600;
   color: #007aff;
   line-height: 1;
 }
-.nav-label {
-  font-size: 24rpx;
-  color: #6b7a8f;
-}
 .week-title {
   flex: 1;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
 }
-.week-range {
-  font-size: 28rpx;
-  font-weight: 600;
+.week-main {
+  font-size: 30rpx;
+  font-weight: 700;
   color: #1a1a2e;
+}
+.week-sub {
+  font-size: 24rpx;
+  color: #8e98a5;
 }
 
 /* ===== 内容区域 ===== */
